@@ -5,6 +5,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 
+import com.example.opengl.shape.GLShape;
+import com.example.opengl.shape.ShapeCreator;
 import com.example.opengl.shape.Square;
 import com.example.opengl.shape.Triangle;
 
@@ -18,14 +20,17 @@ import javax.microedition.khronos.opengles.GL10;
 public class MyRenderer implements GLSurfaceView.Renderer {
 
 
-    private Square mSquare;
-    private Triangle mTriangle;
+    private GLShape mGLShape;
+
+    private ShapeCreator mShapeCreator;
+
+    public MyRenderer(ShapeCreator shapeCreator) {
+        mShapeCreator = shapeCreator;
+    }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mTriangle = new Triangle();
-//        mSquare = new Square();
-
+        mGLShape = mShapeCreator.createShape();
     }
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] vPMatrix = new float[16];
@@ -40,7 +45,10 @@ public class MyRenderer implements GLSurfaceView.Renderer {
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
+        gl.glMatrixMode(GL10.GL_PROJECTION);
+        gl.glLoadIdentity();
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+//        Matrix.orthoM(projectionMatrix,0, -ratio, ratio, -1, 1,1,7);
     }
 
 
@@ -54,12 +62,14 @@ public class MyRenderer implements GLSurfaceView.Renderer {
         mAngle = angle;
     }
 
-    private float[] rotationMatrix = new float[16];
+    private final float[] rotationMatrix = new float[16];
+
     @Override
     public void onDrawFrame(GL10 gl) {
         float[] scratch = new float[16];
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -79,7 +89,9 @@ public class MyRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
 
         // Draw triangle
-        mTriangle.draw(scratch);
+//        mTriangle.draw(scratch);
 
+        //draw rect
+        mGLShape.draw(scratch);
     }
 }

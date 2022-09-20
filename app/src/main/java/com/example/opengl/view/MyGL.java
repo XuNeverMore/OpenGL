@@ -8,6 +8,10 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.LinearInterpolator;
 
+import com.example.opengl.shape.GLShape;
+import com.example.opengl.shape.ShapeCreator;
+import com.example.opengl.shape.Triangle;
+
 public class MyGL extends GLSurfaceView {
 
     private MyRenderer mRenderer;
@@ -24,7 +28,12 @@ public class MyGL extends GLSurfaceView {
 
     private void init() {
         setEGLContextClientVersion(2);
-        mRenderer = new MyRenderer();
+        mRenderer = new MyRenderer(new ShapeCreator() {
+            @Override
+            public GLShape createShape() {
+                return new Triangle();
+            }
+        });
         setRenderer(mRenderer);
     }
 

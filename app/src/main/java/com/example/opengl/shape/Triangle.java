@@ -2,6 +2,7 @@ package com.example.opengl.shape;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import com.example.opengl.MyApp;
 import com.example.opengl.MyUtil;
@@ -14,11 +15,11 @@ import java.nio.FloatBuffer;
  * @author xuchuanting
  * Create on 2020/5/20 15:33
  */
-public class Triangle {
+public class Triangle implements GLShape{
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    static float triangleCoords[] = {   // in counterclockwise order:
+    static float[] triangleCoords = {   // in counterclockwise order:
             0.0f, 0.622008459f, 0.0f, // top
             -0.5f, -0.311004243f, 0.0f, // bottom left
             0.5f, -0.311004243f, 0.0f  // bottom right
@@ -63,10 +64,12 @@ public class Triangle {
     public void draw(float[] mvpMatrix){
         GLES20.glUseProgram(mProgram);
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        Log.i("Triangle", "vposition:"+mPositionHandle);
         GLES20.glEnableVertexAttribArray(mPositionHandle);
         GLES20.glVertexAttribPointer(mPositionHandle,COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,vertexStride,vertexBuffer);
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         GLES20.glUniform4fv(mColorHandle,1,color,0);
+
 
         // get handle to shape's transformation matrix
         vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
