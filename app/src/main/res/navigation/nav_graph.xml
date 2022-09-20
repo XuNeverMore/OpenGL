@@ -16,4 +16,8 @@
         android:id="@+id/squareFragment"
         android:name="com.example.opengl.fragments.SquareFragment"
         android:label="SquareFragment" />
+    <fragment
+        android:id="@+id/textureFragment"
+        android:name="com.example.opengl.fragments.TextureFragment"
+        android:label="TextureFragment" />
 </navigation>

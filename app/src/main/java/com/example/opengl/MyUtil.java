@@ -15,6 +15,58 @@ import java.io.InputStreamReader;
  */
 public class MyUtil {
 
+
+    /**
+     * #vertex #fragment shader在一个文件中
+     *
+     * @param context    Context
+     * @param assetsPath assets路径
+     * @return 两个shader字符串数组，0 ：vertex 1:fragment
+     */
+    public static String[] getShaders(Context context, String assetsPath) {
+        StringBuilder sbVertex = new StringBuilder();
+        StringBuilder sbFragment = new StringBuilder();
+        InputStream inputStream = null;
+        try {
+            inputStream = context.getAssets().open(assetsPath);
+            InputStreamReader reader = new InputStreamReader(inputStream);
+            BufferedReader re = new BufferedReader(reader);
+            String str;
+            StringBuilder sbCurrent = null;
+            while ((str = re.readLine()) != null) {
+                if (str.contains("#")) {
+                    sbCurrent = str.toLowerCase().contains("vertex") ? sbVertex : sbFragment;
+                } else {
+                    if (sbCurrent != null) {
+                        sbCurrent.append(str).append("\n");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return new String[]{sbVertex.toString(), sbFragment.toString()};
+    }
+
+    public int createProgram(Context context, String assetsPath) {
+        String[] shaders = getShaders(context, assetsPath);
+        int program = GLES20.glCreateProgram();
+        int shaderVertex = loadShader(GLES20.GL_VERTEX_SHADER, shaders[0]);
+        int shaderFragment = loadShader(GLES20.GL_FRAGMENT_SHADER, shaders[1]);
+        GLES20.glAttachShader(program, shaderVertex);
+        GLES20.glAttachShader(program, shaderFragment);
+        GLES20.glLinkProgram(program);
+        return program;
+    }
+
     public static String getStringFromAssets(Context context, String filePath) {
         InputStream inputStream = null;
         StringBuilder sb = new StringBuilder();
@@ -40,7 +92,7 @@ public class MyUtil {
         return sb.toString();
     }
 
-    public static int loadShader(int type, String shaderCode){
+    public static int loadShader(int type, String shaderCode) {
 
         // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
         // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
