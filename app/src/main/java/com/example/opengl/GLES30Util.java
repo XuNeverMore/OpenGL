@@ -1,27 +1,32 @@
 package com.example.opengl;
 
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.opengl.GLES20;
 import android.opengl.GLES30;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.IntBuffer;
 
 /**
+ * {0, "NO_ERROR"},
+ * {1280, "GL_INVALID_ENUM"},
+ * {1281, "GL_INVALID_VALUE"},
+ * {1282, "GL_INVALID_OPERATION"},
+ * {1283, "GL_STACK_OVERFLOW"},
+ * {1284, "GL_STACK_UNDERFLOW"},
+ * {1285, "GL_OUT_OF_MEMORY"},
+ * {1286, "GL_INVALID_FRAMEBUFFER_OPERATION"},
+ * {1287, "GL_CONTEXT_LOST"}
+ *
  * @author xuchuanting
  * Create on 2020/5/20 15:27
  */
-public class MyUtil {
+public class GLES30Util {
 
-    public static void getError(String tag) {
-        int error = GLES30.glGetError();
-        if (error != GLES30.GL_NO_ERROR) {
-            throw new RuntimeException(tag+":" + error);
-        }
-    }
+
     /**
      * #vertex #fragment shader在一个文件中
      *
@@ -40,7 +45,7 @@ public class MyUtil {
             String str;
             StringBuilder sbCurrent = null;
             while ((str = re.readLine()) != null) {
-                if (str.contains("#")) {
+                if (str.contains("#shader")) {
                     sbCurrent = str.toLowerCase().contains("vertex") ? sbVertex : sbFragment;
                 } else {
                     if (sbCurrent != null) {
@@ -64,13 +69,23 @@ public class MyUtil {
 
     public static int createProgram(Context context, String assetsPath) {
         String[] shaders = getShaders(context, assetsPath);
-        int program = GLES20.glCreateProgram();
-        int shaderVertex = loadShader(GLES20.GL_VERTEX_SHADER, shaders[0]);
-        int shaderFragment = loadShader(GLES20.GL_FRAGMENT_SHADER, shaders[1]);
-        GLES20.glAttachShader(program, shaderVertex);
-        GLES20.glAttachShader(program, shaderFragment);
-        GLES20.glLinkProgram(program);
+        int program = GLES30.glCreateProgram();
+        int shaderVertex = loadShader(GLES30.GL_VERTEX_SHADER, shaders[0]);
+        int shaderFragment = loadShader(GLES30.GL_FRAGMENT_SHADER, shaders[1]);
+        GLES30.glAttachShader(program, shaderVertex);
+        GLES30.glAttachShader(program, shaderFragment);
+        GLES30.glLinkProgram(program);
+        printError("link program");
+        GLES30.glDeleteShader(shaderVertex);
+        GLES30.glDeleteShader(shaderFragment);
         return program;
+    }
+
+    private static void printError(String tag) {
+        int error = GLES30.glGetError();
+        if (error != GLES30.GL_NO_ERROR) {
+            Log.i("Square", tag + " : " + error);
+        }
     }
 
     public static String getStringFromAssets(Context context, String filePath) {
@@ -100,14 +115,27 @@ public class MyUtil {
 
     public static int loadShader(int type, String shaderCode) {
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        int shader = GLES20.glCreateShader(type);
+        // create a vertex shader type (GLES30.GL_VERTEX_SHADER)
+        // or a fragment shader type (GLES30.GL_FRAGMENT_SHADER)
+        int shader = GLES30.glCreateShader(type);
 
         // add the source code to the shader and compile it
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
-
+        GLES30.glShaderSource(shader, shaderCode);
+        GLES30.glCompileShader(shader);
+        IntBuffer intBuffer = IntBuffer.allocate(1);
+        GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, intBuffer);
+        if (intBuffer.get(0) == GLES30.GL_FALSE) {
+            Log.e("xct", "compile shader:\n"
+                    + shaderCode + "\n error:"
+                    + GLES30.glGetShaderInfoLog(shader));
+        }
         return shader;
+    }
+
+    public static void getError(String tag) {
+        int error = GLES30.glGetError();
+        if (error != GLES30.GL_NO_ERROR) {
+            throw new RuntimeException(tag + ":" + error);
+        }
     }
 }

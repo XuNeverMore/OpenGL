@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.opengl.MyApp;
 import com.example.opengl.MyUtil;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -15,14 +16,19 @@ import java.nio.FloatBuffer;
  * @author xuchuanting
  * Create on 2020/5/20 15:33
  */
-public class Triangle implements GLShape{
+public class Triangle implements GLShape {
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float[] triangleCoords = {   // in counterclockwise order:
-            0.0f, 0.622008459f, 0.0f, // top
-            -0.5f, -0.311004243f, 0.0f, // bottom left
-            0.5f, -0.311004243f, 0.0f  // bottom right
+            0.0f, 0.622008459f, 0.0f,  // top
+            -0.5f, -0.311004243f, 0.0f,  // bottom left
+            0.5f, -0.311004243f, 0.0f// bottom right
+    };
+    private final Buffer mColorBuffer;
+    float[] colors = {1.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f
+            , 0.0f, 0.0f, 1.0f
     };
     private final int mProgram;
     // Set color with red, green, blue and alpha (opacity) values
@@ -50,6 +56,11 @@ public class Triangle implements GLShape{
         // set the buffer to read the first coordinate
         vertexBuffer.position(0);
 
+        mColorBuffer = ByteBuffer.allocateDirect(colors.length * 4)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer().put(colors).position(0);
+
+
         Context context = MyApp.getContext();
         int shaderVertex = MyUtil.loadShader(GLES20.GL_VERTEX_SHADER, MyUtil.getStringFromAssets(context, "triangle_vertex_shader.glsl"));
         int shaderFragment = MyUtil.loadShader(GLES20.GL_FRAGMENT_SHADER, MyUtil.getStringFromAssets(context, "triangle_fragment_shader.glsl"));
@@ -61,22 +72,23 @@ public class Triangle implements GLShape{
 
     }
 
-    public void draw(float[] mvpMatrix){
+    public void draw(float[] mvpMatrix) {
         GLES20.glUseProgram(mProgram);
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-        Log.i("Triangle", "vposition:"+mPositionHandle);
         GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glVertexAttribPointer(mPositionHandle,COORDS_PER_VERTEX,GLES20.GL_FLOAT,false,vertexStride,vertexBuffer);
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-        GLES20.glUniform4fv(mColorHandle,1,color,0);
-
+        GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
+//        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+//        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        mColorHandle = GLES20.glGetAttribLocation(mProgram,"aColor");
+        GLES20.glEnableVertexAttribArray(mColorHandle);
+        GLES20.glVertexAttribPointer(mColorHandle,3,GLES20.GL_FLOAT,false,vertexStride,mColorBuffer);
 
         // get handle to shape's transformation matrix
         vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
 
         // Pass the projection and view transformation to the shader
         GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,vertexCount);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
 }

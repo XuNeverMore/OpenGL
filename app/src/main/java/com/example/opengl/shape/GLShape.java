@@ -7,4 +7,9 @@ package com.example.opengl.shape;
 public interface GLShape {
 
     void draw(float[] mvpMatrix);
+
+    default void destroy(){
+
+    }
+
 }

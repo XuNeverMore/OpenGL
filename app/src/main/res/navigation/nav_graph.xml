@@ -20,4 +20,12 @@
         android:id="@+id/textureFragment"
         android:name="com.example.opengl.fragments.TextureFragment"
         android:label="TextureFragment" />
+    <fragment
+        android:id="@+id/triangle30Fragment"
+        android:name="com.example.opengl.fragments.TriangleThreeFragment"
+        android:label="Triangle30Fragment" />
+    <fragment
+        android:id="@+id/square30Fragment"
+        android:name="com.example.opengl.fragments.Square30Fragment"
+        android:label="Square30Fragment" />
 </navigation>

@@ -23,13 +23,13 @@ public class Square implements GLShape {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static final float squareCoords[] = {
-            -0.5f, 0.5f, 0.0f,      // top left
-            -0.5f, -0.5f, 0.0f,      // bottom left
-            0.5f, -0.5f, 0.0f,      // bottom right
-            0.5f, 0.5f, 0.0f       // top right
+            -1f, 1f, 0.0f,      // top left
+            -1f, -1f, 0.0f,      // bottom left
+            1f, -1f, 0.0f,      // bottom right
+            1f, 1f, 0.0f       // top right
     };
 
-    float color[] = {1f, 0f, 0f, 1.0f};
+    float color[] = {0f, 1f, 1f, 1.0f};
     private final short drawOrder[] = {0, 1, 2, 0, 2, 3}; // order to draw vertices
     private final int mProgram;
     private int mPositionHandle;
@@ -57,14 +57,7 @@ public class Square implements GLShape {
         drawListBuffer.position(0);
 
         Context context = MyApp.getContext();
-        int shaderVertex = MyUtil.loadShader(GLES20.GL_VERTEX_SHADER, MyUtil.getStringFromAssets(context, "triangle_vertex_shader.glsl"));
-        int shaderFragment = MyUtil.loadShader(GLES20.GL_FRAGMENT_SHADER, MyUtil.getStringFromAssets(context, "triangle_fragment_shader.glsl"));
-
-        mProgram = GLES20.glCreateProgram();
-        GLES20.glAttachShader(mProgram, shaderVertex);
-        GLES20.glAttachShader(mProgram, shaderFragment);
-        GLES20.glLinkProgram(mProgram);
-
+        mProgram = MyUtil.createProgram(context,"square20.glsl");
     }
 
     public void draw(float[] mvpMatrix) {
@@ -86,5 +79,6 @@ public class Square implements GLShape {
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
 
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+
     }
 }
