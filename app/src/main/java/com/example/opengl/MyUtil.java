@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.IntBuffer;
 
 /**
  * @author xuchuanting
@@ -107,7 +109,13 @@ public class MyUtil {
         // add the source code to the shader and compile it
         GLES20.glShaderSource(shader, shaderCode);
         GLES20.glCompileShader(shader);
-
+        IntBuffer intBuffer = IntBuffer.allocate(1);
+        GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, intBuffer);
+        if (intBuffer.get(0) == GLES30.GL_FALSE) {
+            Log.e("xct", "compile shader:\n"
+                    + shaderCode + "\n error:"
+                    + GLES30.glGetShaderInfoLog(shader));
+        }
         return shader;
     }
 }
