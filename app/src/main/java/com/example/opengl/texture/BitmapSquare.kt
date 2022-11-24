@@ -17,8 +17,10 @@ import java.nio.ShortBuffer
 class BitmapSquare {
     // 每个顶点的坐标数
     private val COORDS_PER_VERTEX = 3
+
     // 每个纹理顶点的坐标数
     private val COORDS_PER_TEXTURE_VERTEX = 2
+
     // 顶点的坐标
     private var squareCoords = floatArrayOf(
         -0.5f, 0.5f, 0.0f,      // top left
@@ -26,6 +28,7 @@ class BitmapSquare {
         0.5f, -0.5f, 0.0f,      // bottom right
         0.5f, 0.5f, 0.0f       // top right
     )
+
     // 顶点所对应的纹理坐标
     private var texVertex = floatArrayOf(
         0f, 0f,      // top left
@@ -33,6 +36,7 @@ class BitmapSquare {
         1f, 1f,       // bottom right
         1f, 0f     // top right
     )
+
     // 四个顶点的缓冲数组
     private val vertexBuffer: FloatBuffer =
         ByteBuffer.allocateDirect(squareCoords.size * 4).order(ByteOrder.nativeOrder())
@@ -40,6 +44,7 @@ class BitmapSquare {
                 put(squareCoords)
                 position(0)
             }
+
     // 四个顶点的绘制顺序数组
     private val drawOrder = shortArrayOf(0, 1, 2, 0, 2, 3)
 
@@ -81,8 +86,11 @@ class BitmapSquare {
         "varying highp vec2 textureCoordinate;" +
                 "uniform sampler2D inputImageTexture;" +
                 "void main() {" +
-                "  gl_FragColor = texture2D(inputImageTexture, textureCoordinate);" +
+                " vec4 c = texture2D(inputImageTexture, textureCoordinate);" +
+                " float avg = (c.r+c.g+c.b)/3.0;" +
+                " gl_FragColor = vec4(avg,avg,avg,1.0);" +
                 "}"
+
     /**
      * 着色器程序ID引用
      */

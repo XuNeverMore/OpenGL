@@ -33,7 +33,7 @@ class Triangle300 : GLShape {
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer()
             .put(vertices)
-            .position(0)
+
 
         program = GLES30Util.createProgram(MyApp.getContext(), "triangle.glsl")
         Log.i("xct", "program:$program")
@@ -41,11 +41,13 @@ class Triangle300 : GLShape {
 
         GLES30.glEnableVertexAttribArray(0)
         GLES30Util.getError("glEnableVertexAttribArray")
+        buffer.position(0)
         GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 6 * 4, buffer)
         GLES30Util.getError("glVertexAttribPointer")
 
         GLES30.glEnableVertexAttribArray(1)
         GLES30Util.getError("glEnableVertexAttribArray")
+        buffer.position(3)
         GLES30.glVertexAttribPointer(1, 3, GLES30.GL_FLOAT, false, 6 * 4, buffer)
 
     }
