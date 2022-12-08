@@ -44,6 +44,8 @@ public class MyTextureRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        float[] scales = MatrixUtil.getDesireScalesInFullCenter(width, height, mBitmap.getWidth(), mBitmap.getHeight());
+        mBitmapSquare.setScale(scales[0],scales[1]);
     }
 
     @Override

@@ -1,8 +1,7 @@
 package com.example.opengl.texture
 
 import android.opengl.GLES20
-import com.example.opengl.MyApp
-import com.example.opengl.MyUtil
+import android.opengl.Matrix
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -73,9 +72,10 @@ class BitmapSquare {
         "attribute vec4 inputTextureCoordinate;" +
                 " varying vec2 textureCoordinate;" +
                 "attribute vec4 vPosition;" +
+                "uniform mat4 uTexMatrix;" +
                 "void main() {" +
                 // 把vPosition顶点经过矩阵变换后传给gl_Position
-                "  gl_Position = vPosition;" +
+                "  gl_Position = uTexMatrix * vPosition;" +
                 "textureCoordinate = inputTextureCoordinate.xy;" +
                 "}"
 
@@ -96,6 +96,7 @@ class BitmapSquare {
      */
     private var mProgram: Int
 
+    private var floatArray = FloatArray(16)
     init {
         // 编译顶点着色器和片段着色器
         val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
@@ -120,6 +121,11 @@ class BitmapSquare {
         return shader
     }
 
+    fun setScale(scaleX:Float,scaleY:Float){
+        Matrix.setIdentityM(floatArray,0)
+        Matrix.scaleM(floatArray,0,scaleX,scaleY,1f)
+    }
+
     private val vertexStride: Int = COORDS_PER_VERTEX * 4
     private val textVertexStride: Int = COORDS_PER_TEXTURE_VERTEX * 4
 
@@ -135,6 +141,15 @@ class BitmapSquare {
             position, COORDS_PER_VERTEX, GLES20.GL_FLOAT,
             false, vertexStride, vertexBuffer
         )
+
+
+        val matLoc = GLES20.glGetUniformLocation(mProgram, "uTexMatrix")
+
+
+
+
+        GLES20.glUniformMatrix4fv(matLoc,1,false,floatArray,0)
+
         // 激活textureID对应的纹理单元
         GLES20.glActiveTexture(textureID)
         // 绑定纹理
