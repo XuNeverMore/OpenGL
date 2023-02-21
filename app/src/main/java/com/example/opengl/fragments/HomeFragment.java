@@ -35,9 +35,9 @@ public class HomeFragment extends Fragment {
         bindNav(R.id.btn_triangle, R.id.triangleFragment);
         bindNav(R.id.btn_square, R.id.squareFragment);
         bindNav(R.id.btn_square30, R.id.square30Fragment);
-        bindNav(R.id.btn_texture,R.id.textureFragment);
-
-        bindNav(R.id.btn_triangle30,R.id.triangle30Fragment);
+        bindNav(R.id.btn_texture, R.id.textureFragment);
+        bindNav(R.id.btn_triangle30, R.id.triangle30Fragment);
+        bindNav(R.id.btn_sensor, R.id.rotationVectorFragment);
     }
 
     private void bindNav(@IdRes int viewId, int destId) {

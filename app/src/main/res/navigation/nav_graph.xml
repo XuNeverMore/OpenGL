@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
@@ -28,4 +29,9 @@
         android:id="@+id/square30Fragment"
         android:name="com.example.opengl.fragments.Square30Fragment"
         android:label="Square30Fragment" />
+    <fragment
+        android:id="@+id/rotationVectorFragment"
+        android:name="com.example.opengl.fragments.RotationVectorFragment"
+        android:label="fragment_rotation_vector"
+        tools:layout="@layout/fragment_rotation_vector" />
 </navigation>
